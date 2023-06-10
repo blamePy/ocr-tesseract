@@ -38,6 +38,6 @@ app.post('/ocr', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Listening on port 3000');
+app.listen(8200, () => {
+  console.log('Listening on port 8200');
 });
