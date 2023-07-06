@@ -5,41 +5,44 @@ const ocr = require('node-tesseract-ocr');
 const cors = require('cors');
 
 const config = {
-  lang: 'eng',
-  oem: 1,
-  psm: 3,
+	lang: 'spa',
+	oem: 1,
+	psm: 3,
 };
 
 const app = express();
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb', extended: true}));
-app.use(cors({ origin:'*'}));
+
+app.use(cors({ origin: '*' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/ocr', async (req, res) => {
-  const { base64Image } = req.body;
+	const { base64Image } = req.body;
 
-  if (!base64Image) {
-    return res.status(400).json({ error: 'No image provided' });
-  }
+	if (!base64Image) {
+		return res.status(400).json({ error: 'No image provided' });
+	}
 
-  // Decodifica la imagen base64 y escribe en un archivo temporal.
-  const imageBuffer = Buffer.from(base64Image, 'base64');
-  const tempFilePath = 'tempImage.jpg';
-  fs.writeFileSync(tempFilePath, imageBuffer);
+	// Decodifica la imagen base64 y escribe en un archivo temporal.
+	const imageBuffer = Buffer.from(base64Image, 'base64');
+	const tempFilePath = 'tempImage.jpg';
+	fs.writeFileSync(tempFilePath, imageBuffer);
 
-  try {
-    const text = await ocr.recognize(tempFilePath, config);
+	try {
+		const text = await ocr.recognize(tempFilePath, config);
 
-    // Elimina el archivo temporal después de usarlo.
-    const unlinkAsync = promisify(fs.unlink);
-    await unlinkAsync(tempFilePath);
+		// Elimina el archivo temporal después de usarlo.
+		const unlinkAsync = promisify(fs.unlink);
+		await unlinkAsync(tempFilePath);
 
-    res.json({ text });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+		console.log(text.replace(/\n/i, ' '));
+		res.json({ text });
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ error: err.message });
+	}
 });
 
 app.listen(8200, () => {
-  console.log('Listening on port 8200');
+	console.log('Listening on port 8200');
 });

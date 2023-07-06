@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Instalar Tesseract OCR y lenguajes adicionales
-RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-eng
+RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-spa 
 
 # Copiar el resto de los archivos de la aplicación
 COPY . .
